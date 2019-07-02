@@ -1,0 +1,12 @@
+<div class="row">
+    <div class="col">
+        <h1>Write Bennett Code Here!</h1>
+        <textarea style="width: 100%" 
+        [ngModel]="textInput" (ngModelChange)="parseInput($event)"></textarea>
+    </div>
+    <div class="col">
+        <h1>Bennett outputs html here</h1>
+        <textarea disabled style="width: 100%" 
+        [ngModel]="textOutput"></textarea>    
+    </div>
+</div>
