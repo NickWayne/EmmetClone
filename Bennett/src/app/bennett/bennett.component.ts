@@ -12,7 +12,7 @@ import { CharMap } from '../models/charMap.model';
 })
 export class BennettComponent {
 
-  textInput = 'p>span>li*3^p^p';
+  textInput = 'table.table.table-striped>tr*3>td*5{$}';
   textOutput = '';
   stackCharacters = '+>^';
   specialCharacters = [

@@ -59,6 +59,59 @@ export class Element {
         } else {
             str += `>${this.text}</${this.name}>\n`;
         }
-        return str.repeat(this.multiplier);
+        return this.repeatString(str);
+    }
+
+    splitDollars(str: string) {
+        const lst = [];
+        let stringBuilder = '';
+        let dollarToggle = false;
+        while (str !== '') {
+            if (dollarToggle) {
+                if (str[0] !== '$') {
+                    dollarToggle = false;
+                    lst.push(stringBuilder);
+                    stringBuilder = '';
+                }
+                stringBuilder += str[0];
+            } else {
+                if (str[0] === '$') {
+                    dollarToggle = true;
+                    lst.push(stringBuilder);
+                    stringBuilder = '';
+                }
+                stringBuilder += str[0];
+            }
+            if (str.length === 1) {
+                stringBuilder += str[0];
+                lst.push(stringBuilder);
+                str = '';
+            } else {
+                str = str.slice(1, str.length);
+            }
+        }
+        console.log('dollar list', lst);
+        return lst;
+    }
+
+    formatDollars(str: string[], num: string): string {
+        let stringBuilder = '';
+        str.forEach(el => {
+            if (el.startsWith('$')) {
+                stringBuilder += num.padStart(el.length, '0');
+            } else {
+                stringBuilder += el;
+            }
+        });
+        return stringBuilder;
+    }
+
+    repeatString(str: string): string{
+        const dollarList = this.splitDollars(str);
+        let stringBuilder = '';
+        for (let i = 1; i <= this.multiplier; i++) {
+            stringBuilder += this.formatDollars(dollarList, i.toString());
+        }
+        return stringBuilder;
     }
 }
