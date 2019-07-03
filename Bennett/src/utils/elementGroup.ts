@@ -7,11 +7,11 @@ export class ElementGroup {
         this.elements.push(element);
     }
 
-    renderElements(): string[] {
-        const lst = [];
+    renderElements(): string {
+        let result = '';
         this.elements.forEach(el => {
-            lst.push(el.render());
+            result += el.render();
         });
-        return lst;
+        return result;
     }
 }
