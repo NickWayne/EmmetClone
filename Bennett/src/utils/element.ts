@@ -9,9 +9,15 @@ export class Element {
         public childElements: ElementGroup = null,
         public text = '',
         public classes = [],
+        public oneWayIns = [],
+        public oneWayOuts = [],
+        public twoWays = [],
         public id = '',
         public multiplier = 1,
-        public nestingLevel = 0
+        public nestingLevel = 0,
+        public startNumber = 1,
+        public order = true,
+        public customProperties = ''
     ) {}
 
     addProperties(map: CharMap) {
@@ -21,6 +27,30 @@ export class Element {
                 arr = arr.concat(cl.split('.'));
             });
             this.classes = arr;
+        }
+        if (map.oneWayIns) {
+            let arr = [];
+            map.oneWayIns.forEach(cl => {
+                arr = arr.concat(cl.split('&'));
+            });
+            this.oneWayIns = arr;
+        }
+        if (map.oneWayOuts) {
+            let arr = [];
+            map.oneWayOuts.forEach(cl => {
+                arr = arr.concat(cl.split('_'));
+            });
+            this.oneWayOuts = arr;
+        }
+        if (map.twoWays) {
+            let arr = [];
+            map.twoWays.forEach(cl => {
+                arr = arr.concat(cl.split('='));
+            });
+            this.twoWays = arr;
+        }
+        if (map.customProperties) {
+            this.customProperties = map.customProperties;
         }
         if (map.id) {
             this.id = map.id;
@@ -51,6 +81,30 @@ export class Element {
             });
             str = str.slice(0, str.length - 1) + '\'';
         }
+        if (this.oneWayIns.length > 0) {
+            str += ' ';
+            this.oneWayIns.forEach(cl => {
+                str += `(${cl})='' `;
+            });
+            str = str.slice(0, str.length - 1);
+        }
+        if (this.oneWayOuts.length > 0) {
+            str += ' ';
+            this.oneWayOuts.forEach(cl => {
+                str += `[${cl}]='' `;
+            });
+            str = str.slice(0, str.length - 1);
+        }
+        if (this.twoWays.length > 0) {
+            str += ' ';
+            this.twoWays.forEach(cl => {
+                str += `[(${cl})]='' `;
+            });
+            str = str.slice(0, str.length - 1);
+        }
+        if (this.customProperties !== '') {
+            str += ` ${this.customProperties}`;
+        }
         if (this.childElements !== null) {
 
             str += `>${this.text !== '' ? '\n' + '\t'.repeat(this.nestingLevel + 1) + this.text : this.text}\n`;
@@ -62,13 +116,28 @@ export class Element {
         return this.repeatString(str);
     }
 
+    parseLoopModifier(str: string) {
+        this.order = !str.includes('-');
+        if (this.order) {
+            this.startNumber = +str.slice();
+        } else {
+            this.startNumber = +str.slice(1);
+        }
+    }
+
     splitDollars(str: string) {
         const lst = [];
         let stringBuilder = '';
         let dollarToggle = false;
         while (str !== '') {
             if (dollarToggle) {
-                if (str[0] !== '$') {
+                if (str[0] === '@') {
+                    this.parseLoopModifier(str.slice(str.indexOf('@') + 1, str.indexOf(';')));
+                    lst.push(stringBuilder);
+                    stringBuilder = '';
+                    str = str.slice(str.indexOf(';') + 1);
+                    dollarToggle = false;
+                } else if (str[0] !== '$') {
                     dollarToggle = false;
                     lst.push(stringBuilder);
                     stringBuilder = '';
@@ -83,14 +152,12 @@ export class Element {
                 stringBuilder += str[0];
             }
             if (str.length === 1) {
-                stringBuilder += str[0];
                 lst.push(stringBuilder);
                 str = '';
             } else {
-                str = str.slice(1, str.length);
+                str = str.slice(1);
             }
         }
-        console.log('dollar list', lst);
         return lst;
     }
 
@@ -106,11 +173,17 @@ export class Element {
         return stringBuilder;
     }
 
-    repeatString(str: string): string{
+    repeatString(str: string): string {
         const dollarList = this.splitDollars(str);
         let stringBuilder = '';
-        for (let i = 1; i <= this.multiplier; i++) {
-            stringBuilder += this.formatDollars(dollarList, i.toString());
+        if (this.order) {
+            for (let i = this.startNumber; i <= this.multiplier; i++) {
+                stringBuilder += this.formatDollars(dollarList, i.toString());
+            }
+        } else {
+            for (let i = this.multiplier; i >= this.startNumber; i--) {
+                stringBuilder += this.formatDollars(dollarList, i.toString());
+            }
         }
         return stringBuilder;
     }

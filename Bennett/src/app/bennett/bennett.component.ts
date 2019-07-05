@@ -12,14 +12,19 @@ import { CharMap } from '../models/charMap.model';
 })
 export class BennettComponent {
 
-  textInput = 'table.table.table-striped>tr*3>td*5{$}';
+  textInput = 'p["apple"="test this" "test"]';
   textOutput = '';
+  renderHTML = false;
   stackCharacters = '+>^';
   specialCharacters = [
     '{',
     '.',
     '#',
-    '*'
+    '*',
+    '&',
+    '_',
+    '|',
+    '['
   ];
   struct: ElementGroup = new ElementGroup();
   currentElementGroup: ElementGroup = this.struct;
@@ -31,20 +36,20 @@ export class BennettComponent {
     this.currentElementGroup = this.struct;
     this.lastElement = null;
     this.nestingLevel = 0;
-    console.clear();
     this.splitString(event);
     this.textOutput = this.outputElements();
   }
 
-  rankStackCharacters(textInput: string): Rank[] {
+  toggleRenderMode() {
+    this.renderHTML = !this.renderHTML;
+  }
+
+  rankCharacters(textInput: string): Rank[] {
     const rank = [];
-    this.specialCharacters.forEach(charSet => {
-      for (let i = 0; i < charSet.length; i++) {
-        const char = charSet.charAt(i);
-        const pos = textInput.indexOf(char);
-        if (pos > -1) {
-          rank.push({char, pos});
-        }
+    this.specialCharacters.forEach(char => {
+      const pos = textInput.indexOf(char);
+      if (pos > -1) {
+        rank.push({char, pos});
       }
     });
     return rank.sort((a, b) => {
@@ -57,7 +62,16 @@ export class BennettComponent {
     if (str.includes('.')) {
       result.classes = [];
     }
-    let rank = this.rankStackCharacters(str);
+    if (str.includes('&')) {
+      result.oneWayIns = [];
+    }
+    if (str.includes('_')) {
+      result.oneWayOuts = [];
+    }
+    if (str.includes('|')) {
+      result.twoWays = [];
+    }
+    let rank = this.rankCharacters(str);
     if (rank.length > 0) {
       result.name = str.slice(0, rank[0].pos);
       str = str.slice(rank[0].pos, str.length);
@@ -66,14 +80,22 @@ export class BennettComponent {
       return result;
     }
     while (str !== '') {
-      rank = this.rankStackCharacters(str);
+      rank = this.rankCharacters(str);
       if (rank.length > 1) {
           if (rank[0].char === '{') {
             result.text = str.slice(1, str.indexOf('}'));
+          } else if (rank[0].char === '[') {
+            result.customProperties = str.slice(1, str.indexOf(']'));
           } else if (rank[0].char === '.') {
             result.classes.push(str.slice(1, rank[1].pos));
           } else if (rank[0].char === '*') {
             result.multiplier = +str.slice(1, rank[1].pos);
+          } else if (rank[0].char === '&') {
+            result.oneWayIns.push(str.slice(1, rank[1].pos));
+          } else if (rank[0].char === '_') {
+            result.oneWayOuts.push(str.slice(1, rank[1].pos));
+          } else if (rank[0].char === '|') {
+            result.twoWays.push(str.slice(1, rank[1].pos));
           } else {
             result.id = str.slice(1, rank[1].pos);
           }
@@ -81,16 +103,24 @@ export class BennettComponent {
       } else {
         if (rank[0].char === '{' && str.includes('}')) { // Might need to remove
           result.text = str.slice(1, str.length - 1);
+        }  else if (rank[0].char === '[') {
+          result.customProperties = str.slice(1, str.length - 1);
         } else if (rank[0].char === '.') {
-          result.classes.push(str.slice(1, str.length));
+          result.classes.push(str.slice(1));
         } else if (rank[0].char === '*') {
-          result.multiplier = +str.slice(1, str.length);
+          result.multiplier = +str.slice(1);
+        } else if (rank[0].char === '&') {
+          result.oneWayIns.push(str.slice(1));
+        } else if (rank[0].char === '_') {
+          result.oneWayOuts.push(str.slice(1));
+        } else if (rank[0].char === '|') {
+          result.twoWays.push(str.slice(1));
         } else {
-          result.id = str.slice(1, str.length);
+          result.id = str.slice(1);
         }
         str = '';
       }
-  }
+    }
     return result;
   }
 
@@ -104,19 +134,19 @@ export class BennettComponent {
         this.nestingLevel++;
       } else if (el === '^') {
         // console.clear();
-        console.group('^');
-        console.log('CurrElementGroup Before:', this.currentElementGroup);
+        // console.group('^');
+        // console.log('CurrElementGroup Before:', this.currentElementGroup);
         if (this.nestingLevel > 0) {
           this.currentElementGroup = this.lastElement.parentGroup;
           this.nestingLevel--;
         }
-        console.log('CurrElementGroup after', this.currentElementGroup);
+        // console.log('CurrElementGroup after', this.currentElementGroup);
         // console.log('struct', this.struct);
-        console.groupEnd();
+        // console.groupEnd();
       } else if (el !== '+' && el !== '') {
         let newElement = null;
-        console.group(el);
-        console.log('lastElement Before:', this.lastElement);
+        // console.group(el);
+        // console.log('lastElement Before:', this.lastElement);
         if (this.lastElement !== null) {
           newElement = this.constructElement(el, this.lastElement.parentGroup);
         } else {
@@ -124,8 +154,8 @@ export class BennettComponent {
         }
         this.currentElementGroup.addElement(newElement);
         this.lastElement = newElement;
-        console.log('lastElement After:', this.lastElement);
-        console.groupEnd();
+        // console.log('lastElement After:', this.lastElement);
+        // console.groupEnd();
       }
     });
 

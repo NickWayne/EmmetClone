@@ -5,9 +5,15 @@
         [ngModel]="textInput" (ngModelChange)="parseInput($event)"></textarea>
     </div>
     <div class="col">
+        <button class="btn btn-primary" (click)="toggleRenderMode()">Toggle Render Mode</button>
         <h1>Bennett outputs html here</h1>
-        <textarea disabled style="width: 100%; height: 80vh;" spellcheck="false"
-        [ngModel]="textOutput"></textarea>    
+        <div id="textBox" *ngIf='!renderHTML'>
+            <textarea disabled style="width: 100%; height: 80vh;" spellcheck="false"
+            [ngModel]="textOutput"></textarea>    
+        </div>
+        <div id="htmlBox" *ngIf='renderHTML' [innerHTML]='textOutput'>
+
+        </div>
     </div>
 </div>
 

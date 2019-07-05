@@ -9,4 +9,8 @@ export interface CharMap {
     multiplier?: number;
     parent?: Element;
     subElements?: ElementGroup;
+    oneWayIns?: string[];
+    oneWayOuts?: string[];
+    twoWays?: string[];
+    customProperties?: string;
 }
