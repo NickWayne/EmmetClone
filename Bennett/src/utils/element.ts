@@ -176,14 +176,18 @@ export class Element {
     repeatString(str: string): string {
         const dollarList = this.splitDollars(str);
         let stringBuilder = '';
-        if (this.order) {
-            for (let i = this.startNumber; i <= this.multiplier; i++) {
-                stringBuilder += this.formatDollars(dollarList, i.toString());
+        if (this.multiplier > 1) {
+            if (this.order) {
+                for (let i = this.startNumber; i <= this.multiplier + this.startNumber - 1; i++) {
+                    stringBuilder += this.formatDollars(dollarList, i.toString());
+                }
+            } else {
+                for (let i = this.multiplier + this.startNumber - 1; i >= this.startNumber; i--) {
+                    stringBuilder += this.formatDollars(dollarList, i.toString());
+                }
             }
         } else {
-            for (let i = this.multiplier; i >= this.startNumber; i--) {
-                stringBuilder += this.formatDollars(dollarList, i.toString());
-            }
+            stringBuilder += this.formatDollars(dollarList, '1');
         }
         return stringBuilder;
     }
