@@ -2,6 +2,9 @@ import { Element } from './element';
 
 export class ElementGroup {
     elements: Element[] = [];
+    constructor(
+        public parentElement: Element = null
+    ) {}
 
     addElement(element: Element): void {
         this.elements.push(element);

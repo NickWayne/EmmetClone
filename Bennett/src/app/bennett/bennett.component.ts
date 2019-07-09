@@ -12,7 +12,7 @@ import { CharMap } from '../models/charMap.model';
 })
 export class BennettComponent {
 
-  textInput = 'p["apple"="test this" "test"]';
+  textInput = 'p1>span>li*3^p2^p3';
   textOutput = '';
   renderHTML = false;
   stackCharacters = '+>^';
@@ -128,43 +128,27 @@ export class BennettComponent {
     const elementList = SplitMultiCharacter(this.stackCharacters, textInput);
     elementList.forEach(el => {
       if (el === '>') {
-        // Add error checking
-        this.lastElement.childElements = new ElementGroup();
+        this.lastElement.childElements = new ElementGroup(this.lastElement);
         this.currentElementGroup = this.lastElement.childElements;
         this.nestingLevel++;
       } else if (el === '^') {
-        // console.clear();
-        // console.group('^');
-        // console.log('CurrElementGroup Before:', this.currentElementGroup);
         if (this.nestingLevel > 0) {
-          this.currentElementGroup = this.lastElement.parentGroup;
+          this.currentElementGroup = this.currentElementGroup.parentElement.parentGroup;
           this.nestingLevel--;
         }
-        // console.log('CurrElementGroup after', this.currentElementGroup);
-        // console.log('struct', this.struct);
-        // console.groupEnd();
       } else if (el !== '+' && el !== '') {
-        let newElement = null;
-        // console.group(el);
-        // console.log('lastElement Before:', this.lastElement);
-        if (this.lastElement !== null) {
-          newElement = this.constructElement(el, this.lastElement.parentGroup);
-        } else {
-          newElement = this.constructElement(el, this.struct);
-        }
+        const newElement = this.constructElement(el);
         this.currentElementGroup.addElement(newElement);
         this.lastElement = newElement;
-        // console.log('lastElement After:', this.lastElement);
-        // console.groupEnd();
       }
     });
 
   }
 
-  constructElement(el: string, parentGroup: ElementGroup): Element {
+  constructElement(el: string): Element {
     const properties = this.splitAndAssignProperties(el);
     const addElement = new Element(properties.name);
-    addElement.parentGroup = parentGroup;
+    addElement.parentGroup = this.currentElementGroup;
     addElement.nestingLevel = this.nestingLevel;
     addElement.addProperties(properties);
     return addElement;
