@@ -16,15 +16,15 @@ export class BennettComponent {
   textOutput = '';
   renderHTML = false;
   stackCharacters = '+>^';
-  specialCharacters = [
-    '{',
-    '.',
-    '#',
-    '*',
-    '&',
-    '_',
-    '|',
-    '['
+  propertyModifiers = [
+    '{', // Text (close with '}')
+    '.', // Classes
+    '#', // Id
+    '*', // Multiplier
+    '&', // Angular Oneway binding in
+    '_', // Angular Oneway binding out
+    '|', // Angular Twoway binding
+    '['  // Custom Attributes (inserts directly, close with ']')
   ];
   struct: ElementGroup = new ElementGroup();
   currentElementGroup: ElementGroup = this.struct;
@@ -46,7 +46,7 @@ export class BennettComponent {
 
   rankCharacters(textInput: string): Rank[] {
     const rank = [];
-    this.specialCharacters.forEach(char => {
+    this.propertyModifiers.forEach(char => {
       const pos = textInput.indexOf(char);
       if (pos > -1) {
         rank.push({char, pos});
