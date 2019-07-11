@@ -12,7 +12,7 @@ import { CharMap } from '../models/charMap.model';
 })
 export class BennettComponent {
 
-  textInput = 'p1>span>li*3^p2^p3';
+  textInput = 'a:mai';
   textOutput = '';
   renderHTML = false;
   stackCharacters = '+>^';
@@ -85,7 +85,7 @@ export class BennettComponent {
           if (rank[0].char === '{') {
             result.text = str.slice(1, str.indexOf('}'));
           } else if (rank[0].char === '[') {
-            result.customProperties = str.slice(1, str.indexOf(']'));
+            result.properties = str.slice(1, str.indexOf(']'));
           } else if (rank[0].char === '.') {
             result.classes.push(str.slice(1, rank[1].pos));
           } else if (rank[0].char === '*') {
@@ -104,7 +104,7 @@ export class BennettComponent {
         if (rank[0].char === '{' && str.includes('}')) { // Might need to remove
           result.text = str.slice(1, str.length - 1);
         }  else if (rank[0].char === '[') {
-          result.customProperties = str.slice(1, str.length - 1);
+          result.properties = str.slice(1, str.length - 1);
         } else if (rank[0].char === '.') {
           result.classes.push(str.slice(1));
         } else if (rank[0].char === '*') {
@@ -147,10 +147,9 @@ export class BennettComponent {
 
   constructElement(el: string): Element {
     const properties = this.splitAndAssignProperties(el);
-    const addElement = new Element(properties.name);
+    const addElement = new Element(properties.name, properties);
     addElement.parentGroup = this.currentElementGroup;
     addElement.nestingLevel = this.nestingLevel;
-    addElement.addProperties(properties);
     return addElement;
   }
 

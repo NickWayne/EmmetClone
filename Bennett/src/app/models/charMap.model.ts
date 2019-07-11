@@ -12,5 +12,6 @@ export interface CharMap {
     oneWayIns?: string[];
     oneWayOuts?: string[];
     twoWays?: string[];
-    customProperties?: string;
+    properties?: string;
+    selfClosing?: boolean;
 }

@@ -1,0 +1,43 @@
+{
+    "a": {
+        "properties": ["href=''"]
+    },
+    "a:link": {
+        "properties": ["href='http://'"]
+    },
+    "a:mail": {
+        "properties": ["href='mailto:'"]
+    },
+    "br": {
+        "selfClosing": true
+    },
+    "link": {
+        "properties": ["rel='stylesheet'", "href=''"]
+    },
+    "img": {
+        "selfClosing": true,
+        "properties": ["src=''", "alt=''"]
+    },
+    "form": {
+        "properties": ["action=''"]
+    },
+    "form:get": {
+        "properties": ["action=''", "method='get'"]
+    },
+    "form:post": {
+        "properties": ["action=''", "method='post'"]
+    },
+    "opt": {
+        "name": "option",
+        "properties": ["value=''"]
+    },
+    "btn": {
+        "name": "button"
+    },
+    "bq": {
+        "name": "blockquote"
+    },
+    "pic": {
+        "name": "picture"
+    }
+}

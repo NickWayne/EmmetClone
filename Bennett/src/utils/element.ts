@@ -1,9 +1,13 @@
 import { CharMap } from 'src/app/models/charMap.model';
 import { ElementGroup } from './elementGroup';
+import { ElementTemplates } from './elementTemplates';
 export class Element {
+
+    elementTemplates = new ElementTemplates();
 
     constructor(
         public name: string,
+        public inputProperties: CharMap,
         public parent: Element = null,
         public parentGroup: ElementGroup = null,
         public childElements: ElementGroup = null,
@@ -17,40 +21,47 @@ export class Element {
         public nestingLevel = 0,
         public startNumber = 1,
         public order = true,
-        public customProperties = ''
-    ) {}
+        public properties = '',
+        public selfClosing = false
+    ) {
+        this.addProperties(this.inputProperties);
+        this.addProperties(this.elementTemplates.getTemplate(this.name));
+    }
 
     addProperties(map: CharMap) {
+        if (map.name) {
+            this.name = map.name;
+        }
         if (map.classes) {
             let arr = [];
             map.classes.forEach(cl => {
                 arr = arr.concat(cl.split('.'));
             });
-            this.classes = arr;
+            this.classes = this.classes.concat(arr);
         }
         if (map.oneWayIns) {
             let arr = [];
             map.oneWayIns.forEach(cl => {
                 arr = arr.concat(cl.split('&'));
             });
-            this.oneWayIns = arr;
+            this.oneWayIns = this.oneWayIns.concat(arr);
         }
         if (map.oneWayOuts) {
             let arr = [];
             map.oneWayOuts.forEach(cl => {
                 arr = arr.concat(cl.split('_'));
             });
-            this.oneWayOuts = arr;
+            this.oneWayOuts = this.oneWayOuts.concat(arr);
         }
         if (map.twoWays) {
             let arr = [];
             map.twoWays.forEach(cl => {
                 arr = arr.concat(cl.split('='));
             });
-            this.twoWays = arr;
+            this.twoWays = this.twoWays.concat(arr);
         }
-        if (map.customProperties) {
-            this.customProperties = map.customProperties;
+        if (map.properties) {
+            this.properties = map.properties;
         }
         if (map.id) {
             this.id = map.id;
@@ -66,6 +77,9 @@ export class Element {
         }
         if (map.subElements) {
             this.childElements = map.subElements;
+        }
+        if (map.selfClosing) {
+            this.selfClosing = map.selfClosing;
         }
     }
 
@@ -102,16 +116,19 @@ export class Element {
             });
             str = str.slice(0, str.length - 1);
         }
-        if (this.customProperties !== '') {
-            str += ` ${this.customProperties}`;
+        if (this.properties !== '') {
+            str += ` ${this.properties}`;
         }
-        if (this.childElements !== null) {
-
-            str += `>${this.text !== '' ? '\n' + '\t'.repeat(this.nestingLevel + 1) + this.text : this.text}\n`;
-            str += this.childElements.renderElements();
-            str += '\t'.repeat(this.nestingLevel) + `</${this.name}>\n`;
+        if (this.selfClosing) {
+            str += ` />\n`;
         } else {
-            str += `>${this.text}</${this.name}>\n`;
+            if (this.childElements !== null) {
+                str += `>${this.text !== '' ? '\n' + '\t'.repeat(this.nestingLevel + 1) + this.text : this.text}\n`;
+                str += this.childElements.renderElements();
+                str += '\t'.repeat(this.nestingLevel) + `</${this.name}>\n`;
+            } else {
+                str += `>${this.text}</${this.name}>\n`;
+            }
         }
         return this.repeatString(str);
     }
