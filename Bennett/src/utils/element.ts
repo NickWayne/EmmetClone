@@ -28,59 +28,28 @@ export class Element {
         this.addProperties(this.elementTemplates.getTemplate(this.name));
     }
 
+    mapAttribute(mapItem: string[], splitChar: string): string[] {
+        let arr = [];
+        mapItem.forEach(el => {
+            arr = arr.concat(el.split(splitChar));
+        });
+        return arr;
+    }
+
     addProperties(map: CharMap) {
-        if (map.name) {
-            this.name = map.name;
-        }
-        if (map.classes) {
-            let arr = [];
-            map.classes.forEach(cl => {
-                arr = arr.concat(cl.split('.'));
-            });
-            this.classes = this.classes.concat(arr);
-        }
-        if (map.oneWayIns) {
-            let arr = [];
-            map.oneWayIns.forEach(cl => {
-                arr = arr.concat(cl.split('&'));
-            });
-            this.oneWayIns = this.oneWayIns.concat(arr);
-        }
-        if (map.oneWayOuts) {
-            let arr = [];
-            map.oneWayOuts.forEach(cl => {
-                arr = arr.concat(cl.split('_'));
-            });
-            this.oneWayOuts = this.oneWayOuts.concat(arr);
-        }
-        if (map.twoWays) {
-            let arr = [];
-            map.twoWays.forEach(cl => {
-                arr = arr.concat(cl.split('='));
-            });
-            this.twoWays = this.twoWays.concat(arr);
-        }
-        if (map.properties) {
-            this.properties = map.properties;
-        }
-        if (map.id) {
-            this.id = map.id;
-        }
-        if (map.text) {
-            this.text = map.text;
-        }
-        if (map.multiplier) {
-            this.multiplier = map.multiplier;
-        }
-        if (map.parent) {
-            this.parent = map.parent;
-        }
-        if (map.subElements) {
-            this.childElements = map.subElements;
-        }
-        if (map.selfClosing) {
-            this.selfClosing = map.selfClosing;
-        }
+        this.name = map.name ? map.name : this.name;
+        this.text = map.text ? map.text : this.text;
+        this.classes = map.classes ? map.classes : this.classes.concat(this.mapAttribute(map.classes, '.'));
+        this.oneWayIns = map.oneWayIns ? map.oneWayIns : this.oneWayIns.concat(this.mapAttribute(map.oneWayIns, '&'));
+        this.oneWayOuts = map.oneWayOuts ? map.oneWayOuts : this.oneWayOuts.concat(this.mapAttribute(map.oneWayOuts, '_'));
+        this.twoWays = map.twoWays ? map.twoWays : this.twoWays.concat(this.mapAttribute(map.twoWays, '|'));
+        this.properties = map.properties ? map.properties : this.properties;
+        this.id = map.id ? map.id : this.id;
+        this.text = map.text ? map.text : this.text;
+        this.multiplier = map.multiplier ? map.multiplier : this.multiplier;
+        this.parent = map.parent ? map.parent : map.parent;
+        this.childElements = map.subElements ? map.subElements : this.childElements;
+        this.selfClosing = map.selfClosing ? map.selfClosing : this.selfClosing;
     }
 
     render(): string {

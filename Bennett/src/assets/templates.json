@@ -39,5 +39,15 @@
     },
     "pic": {
         "name": "picture"
+    },
+    "Test This": {
+        "name": "thistest",
+        "properties": ["value=''"],
+        "selfClosing": false,
+        "classes": ["test", "test2"],
+        "oneWayIns": ["inTest"],
+        "oneWayOuts": ["outTest"],
+        "twoWays": ["TwoWayeTes"],
+        "id": "TESTID"
     }
 }
