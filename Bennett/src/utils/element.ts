@@ -39,10 +39,10 @@ export class Element {
     addProperties(map: CharMap) {
         this.name = map.name ? map.name : this.name;
         this.text = map.text ? map.text : this.text;
-        this.classes = map.classes ? map.classes : this.classes.concat(this.mapAttribute(map.classes, '.'));
-        this.oneWayIns = map.oneWayIns ? map.oneWayIns : this.oneWayIns.concat(this.mapAttribute(map.oneWayIns, '&'));
-        this.oneWayOuts = map.oneWayOuts ? map.oneWayOuts : this.oneWayOuts.concat(this.mapAttribute(map.oneWayOuts, '_'));
-        this.twoWays = map.twoWays ? map.twoWays : this.twoWays.concat(this.mapAttribute(map.twoWays, '|'));
+        this.classes = map.classes ? this.classes.concat(this.mapAttribute(map.classes, '.')) : this.classes;
+        this.oneWayIns = map.oneWayIns ? this.oneWayIns.concat(this.mapAttribute(map.oneWayIns, '&')) : this.oneWayIns;
+        this.oneWayOuts = map.oneWayOuts ? this.oneWayOuts.concat(this.mapAttribute(map.oneWayOuts, '_')) : this.oneWayOuts;
+        this.twoWays = map.twoWays ? this.twoWays.concat(this.mapAttribute(map.twoWays, '|')) : this.twoWays;
         this.properties = map.properties ? map.properties : this.properties;
         this.id = map.id ? map.id : this.id;
         this.text = map.text ? map.text : this.text;
